@@ -1,0 +1,94 @@
+version: "0.5"
+log-level: info
+
+processes:
+  postgres:
+    command: >
+      bash -c '
+        [ -d test/e2e/data/pgdata ] || initdb -D test/e2e/data/pgdata --auth=trust --no-instructions;
+        postgres -D test/e2e/data/pgdata -k /tmp -p 5432
+      '
+    readiness_probe:
+      exec:
+        command: "pg_isready -h /tmp -p 5432"
+    availability:
+      restart: on_failure
+
+  zitadel:
+    command: >
+      zitadel start-from-init
+        --config test/e2e/zitadel/config.yaml
+        --masterkeyFromEnv
+    environment:
+      - "ZITADEL_MASTERKEY=MasterkeyNeedsToHave32Characters"
+      - "ZITADEL_FIRSTINSTANCE_PAT_VALUE=e2e-admin-pat-value-for-testing"
+    readiness_probe:
+      http_get:
+        host: "127.0.0.1"
+        port: 8080
+        path: "/debug/ready"
+    depends_on:
+      postgres:
+        condition: process_healthy
+    availability:
+      restart: on_failure
+
+  spire-server:
+    command: spire-server run -config test/e2e/spire/server.conf
+    readiness_probe:
+      exec:
+        command: "spire-server healthcheck -config test/e2e/spire/server.conf -shallow"
+    availability:
+      restart: on_failure
+
+  openbao:
+    command: >
+      bao server -dev
+        -dev-root-token-id=e2e-root-token
+        -dev-listen-address=127.0.0.1:8200
+    readiness_probe:
+      http_get:
+        host: "127.0.0.1"
+        port: 8200
+        path: "/v1/sys/health"
+    availability:
+      restart: on_failure
+
+  bootstrap-spire:
+    command: bash test/e2e/bootstrap/01-spire.sh
+    depends_on:
+      spire-server:
+        condition: process_healthy
+    availability:
+      restart: "no"
+
+  spire-agent:
+    command: spire-agent run -config test/e2e/data/agent.conf
+    depends_on:
+      bootstrap-spire:
+        condition: process_completed_successfully
+    readiness_probe:
+      exec:
+        command: "test -S test/e2e/data/agent.sock"
+    availability:
+      restart: on_failure
+
+  bootstrap-openbao-infra:
+    command: bash test/e2e/bootstrap/02-openbao-infra.sh
+    depends_on:
+      openbao:
+        condition: process_healthy
+      zitadel:
+        condition: process_healthy
+    availability:
+      restart: "no"
+
+  bootstrap-app:
+    command: bash test/e2e/bootstrap/03-setup.sh
+    depends_on:
+      bootstrap-openbao-infra:
+        condition: process_completed_successfully
+      spire-agent:
+        condition: process_healthy
+    availability:
+      restart: "no"

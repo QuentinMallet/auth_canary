@@ -1,0 +1,19 @@
+ExternalDomain: "localhost"
+ExternalPort: 8080
+ExternalSecure: false
+TLS:
+  Enabled: false
+Database:
+  Postgres:
+    Host: "/tmp"
+    Port: 5432
+    Database: "zitadel"
+    User: "zitadel"
+    Password: ""
+    SSL:
+      Mode: "disable"
+Log:
+  Level: "info"
+DefaultInstance:
+  DefaultOrg:
+    Name: "E2E Test Org"

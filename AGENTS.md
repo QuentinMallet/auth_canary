@@ -27,6 +27,13 @@ This project uses the [Ash Framework](https://hexdocs.pm/ash) as the primary abs
 - LiveView assigns drive from `Ash.read!` / `Ash.get!`; avoid holding raw structs from outside Ash
 - Error rendering: use `AshPhoenix.Form.errors/1`, not manual changeset traversal
 
+### Exceptions
+
+Daemon and canary applications that have no domain entities, no external API surface, and no UI
+(e.g., `auth_canary`) are exempt from Ash requirements. These apps use plain GenServer/OTP patterns
+directly. The exemption must be stated explicitly in the application's own `AGENTS.md` section or
+`README.md`. If in doubt, default to Ash.
+
 ---
 
 ## Observability: observlib-ex

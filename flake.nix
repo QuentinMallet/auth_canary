@@ -69,11 +69,11 @@
         packages = {
           # Build the application as a release
           default = buildMixProject {
-            pname = "elixir-app";
+            pname = "auth_canary";
             version = "0.1.0";
             src = ./.;
             mixEnv = "prod";
-            # mixNix = ./mix.nix;  # Uncomment after generating mix.nix
+            mixNix = ./mix.nix;
           };
 
           # Build documentation
@@ -138,9 +138,6 @@
             # Development tools
             elixir-ls # Language server for IDE support
             git
-
-            # Code quality
-            beamPackages.credo # Static code analysis
 
             # Database clients (optional, uncomment if needed)
             # postgresql

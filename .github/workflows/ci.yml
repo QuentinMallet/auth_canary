@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra-nix-config: |
+            experimental-features = nix-command flakes
+
+      - name: Cache Nix store
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-store-${{ hashFiles('flake.lock', 'flake.nix') }}
+          restore-keys: nix-store-
+
+      - name: Cache Mix artifacts
+        uses: actions/cache@v4
+        with:
+          path: |
+            deps
+            _build
+            .nix-mix
+            .nix-hex
+          key: mix-${{ hashFiles('mix.lock', 'mix.exs') }}
+          restore-keys: mix-
+
+      - name: Fetch dependencies
+        run: nix develop --command mix deps.get
+
+      - name: Compile (zero warnings)
+        run: nix develop --command mix compile --warnings-as-errors
+
+      - name: Check formatting
+        run: nix develop --command mix format --check-formatted
+
+      - name: Unit and property tests
+        run: nix develop --command mix test --exclude resilience
+
+      - name: Resilience tests
+        run: nix develop --command mix test --only resilience
+
+  e2e:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: cachix/install-nix-action@v31
+        with:
+          extra-nix-config: |
+            experimental-features = nix-command flakes
+
+      - name: Cache Nix store (e2e)
+        uses: actions/cache@v4
+        with:
+          path: /nix/store
+          key: nix-e2e-store-${{ hashFiles('flake.lock', 'flake.nix') }}
+          restore-keys: nix-e2e-store-
+
+      - name: Start e2e environment (background)
+        run: nix develop .#e2e --command bash -c 'process-compose up -f test/e2e/process-compose.yaml -d'
+
+      - name: Wait for bootstrap completion
+        run: |
+          nix develop .#e2e --command bash -c '
+            for i in $(seq 1 45); do
+              [ -f test/e2e/data/e2e.env ] && exit 0
+              echo "Waiting for bootstrap... ($i/45)"
+              sleep 2
+            done
+            echo "Bootstrap timed out after 90 seconds" && exit 1
+          '
+
+      - name: Run e2e tests
+        run: nix develop --command mix test --only e2e
+
+      - name: Teardown e2e environment
+        if: always()
+        run: nix develop .#e2e --command process-compose down -f test/e2e/process-compose.yaml || true

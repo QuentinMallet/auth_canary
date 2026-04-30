@@ -68,3 +68,7 @@ npm-debug.log
 *.db
 *.db-shm
 *.db-wal
+
+# E2E test environment generated data
+test/e2e/data/
+!test/e2e/data/.gitkeep

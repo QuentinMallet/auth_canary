@@ -30,7 +30,6 @@ defmodule AuthCanary.Setup do
     ensure_zitadel_key(url, user_id, auth_header, transport)
 
     ensure_openbao_role(client_id)
-    ensure_openbao_secret()
 
     :ok
   end
@@ -312,49 +311,6 @@ defmodule AuthCanary.Setup do
 
       {:error, reason} ->
         step_error!(:openbao_role, reason)
-    end
-  end
-
-  defp ensure_openbao_secret do
-    bao_addr = Application.fetch_env!(:auth_canary, :bao_addr)
-    bao_secret_path = Application.fetch_env!(:auth_canary, :bao_secret_path)
-    bao_kv_mount = Application.get_env(:auth_canary, :bao_kv_mount, "secret")
-    bao_admin_token = Application.get_env(:auth_canary, :bao_admin_token)
-    ca_cert = Application.get_env(:auth_canary, :bao_ca_cert)
-    tls_verify = Application.get_env(:auth_canary, :bao_tls_verify, true)
-    transport = [transport_opts: tls_opts(ca_cert, tls_verify)]
-    vault_header = [{"x-vault-token", bao_admin_token || ""}]
-
-    case Req.get("#{bao_addr}/v1/#{bao_kv_mount}/data/#{bao_secret_path}",
-           headers: vault_header,
-           receive_timeout: 5_000,
-           connect_options: transport
-         ) do
-      {:ok, %Req.Response{status: 200}} ->
-        :ok
-
-      {:ok, %Req.Response{status: 404}} ->
-        case Req.post("#{bao_addr}/v1/#{bao_kv_mount}/data/#{bao_secret_path}",
-               json: %{"data" => %{"canary" => "health_check_ok"}},
-               headers: vault_header,
-               receive_timeout: 5_000,
-               connect_options: transport
-             ) do
-          {:ok, %Req.Response{status: s}} when s in [200, 204] ->
-            :ok
-
-          {:ok, %Req.Response{} = resp} ->
-            step_error!(:openbao_secret, resp)
-
-          {:error, reason} ->
-            step_error!(:openbao_secret, reason)
-        end
-
-      {:ok, %Req.Response{} = resp} ->
-        step_error!(:openbao_secret, resp)
-
-      {:error, reason} ->
-        step_error!(:openbao_secret, reason)
     end
   end
 

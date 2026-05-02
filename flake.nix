@@ -262,5 +262,7 @@
           };
         };
       }
-    );
+    ) // {
+    lib.zitadelProject = "CoreApps";
+  };
 }

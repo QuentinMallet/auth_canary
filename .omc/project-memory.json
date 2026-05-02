@@ -32,20 +32,32 @@
   "hotPaths": [
     {
       "path": "",
-      "accessCount": 24,
-      "lastAccessed": 1777541752082,
+      "accessCount": 66,
+      "lastAccessed": 1777580256630,
       "type": "directory"
     },
     {
-      "path": "AGENTS.md",
-      "accessCount": 18,
-      "lastAccessed": 1777541931012,
+      "path": "flake.nix",
+      "accessCount": 34,
+      "lastAccessed": 1777580265954,
       "type": "file"
     },
     {
-      "path": "flake.nix",
-      "accessCount": 16,
-      "lastAccessed": 1777541606144,
+      "path": "AGENTS.md",
+      "accessCount": 19,
+      "lastAccessed": 1777549941316,
+      "type": "file"
+    },
+    {
+      "path": "config/runtime.exs",
+      "accessCount": 15,
+      "lastAccessed": 1777580265556,
+      "type": "file"
+    },
+    {
+      "path": "mix.exs",
+      "accessCount": 13,
+      "lastAccessed": 1777579694445,
       "type": "file"
     },
     {
@@ -55,21 +67,45 @@
       "type": "file"
     },
     {
-      "path": "mix.exs",
-      "accessCount": 8,
-      "lastAccessed": 1777543264756,
-      "type": "file"
-    },
-    {
       "path": "test/auth_canary/setup_test.exs",
       "accessCount": 8,
       "lastAccessed": 1777543930177,
       "type": "file"
     },
     {
-      "path": "config/runtime.exs",
-      "accessCount": 6,
-      "lastAccessed": 1777543733506,
+      "path": "lib/auth_canary/pipeline.ex",
+      "accessCount": 8,
+      "lastAccessed": 1777579693743,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/application.ex",
+      "accessCount": 7,
+      "lastAccessed": 1777579679762,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/setup.ex",
+      "accessCount": 7,
+      "lastAccessed": 1777579680784,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/spiffe.ex",
+      "accessCount": 5,
+      "lastAccessed": 1777550626107,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/zitadel.ex",
+      "accessCount": 5,
+      "lastAccessed": 1777550627327,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/openbao.ex",
+      "accessCount": 5,
+      "lastAccessed": 1777550627878,
       "type": "file"
     },
     {
@@ -85,15 +121,21 @@
       "type": "file"
     },
     {
-      "path": "deps/observlib/lib/observlib/config.ex",
-      "accessCount": 3,
-      "lastAccessed": 1777539520728,
+      "path": "config/config.exs",
+      "accessCount": 4,
+      "lastAccessed": 1777550641243,
       "type": "file"
     },
     {
-      "path": "lib/auth_canary/pipeline.ex",
+      "path": "test/test_helper.exs",
+      "accessCount": 4,
+      "lastAccessed": 1777564482129,
+      "type": "file"
+    },
+    {
+      "path": "deps/observlib/lib/observlib/config.ex",
       "accessCount": 3,
-      "lastAccessed": 1777539904086,
+      "lastAccessed": 1777539520728,
       "type": "file"
     },
     {
@@ -103,9 +145,27 @@
       "type": "directory"
     },
     {
-      "path": "lib/auth_canary/setup.ex",
+      "path": ".beads/issues.jsonl",
       "accessCount": 3,
-      "lastAccessed": 1777543836760,
+      "lastAccessed": 1777545713490,
+      "type": "file"
+    },
+    {
+      "path": "test",
+      "accessCount": 3,
+      "lastAccessed": 1777550273067,
+      "type": "directory"
+    },
+    {
+      "path": "config/test.exs",
+      "accessCount": 3,
+      "lastAccessed": 1777550643271,
+      "type": "file"
+    },
+    {
+      "path": "lib/auth_canary/scheduler.ex",
+      "accessCount": 3,
+      "lastAccessed": 1777579681833,
       "type": "file"
     },
     {
@@ -115,27 +175,9 @@
       "type": "file"
     },
     {
-      "path": "lib/auth_canary/openbao.ex",
-      "accessCount": 2,
-      "lastAccessed": 1777539906656,
-      "type": "file"
-    },
-    {
       "path": "lib/auth_canary/error.ex",
       "accessCount": 2,
       "lastAccessed": 1777539907876,
-      "type": "file"
-    },
-    {
-      "path": "config/config.exs",
-      "accessCount": 2,
-      "lastAccessed": 1777540812060,
-      "type": "file"
-    },
-    {
-      "path": "lib/auth_canary/application.ex",
-      "accessCount": 2,
-      "lastAccessed": 1777541197485,
       "type": "file"
     },
     {
@@ -145,27 +187,9 @@
       "type": "file"
     },
     {
-      "path": "test",
-      "accessCount": 2,
-      "lastAccessed": 1777541980293,
-      "type": "directory"
-    },
-    {
-      "path": ".beads/issues.jsonl",
-      "accessCount": 2,
-      "lastAccessed": 1777541991692,
-      "type": "file"
-    },
-    {
       "path": "test/auth_canary/scheduler_test.exs",
       "accessCount": 2,
       "lastAccessed": 1777543289939,
-      "type": "file"
-    },
-    {
-      "path": "test/test_helper.exs",
-      "accessCount": 1,
-      "lastAccessed": 1777539019836,
       "type": "file"
     },
     {
@@ -205,24 +229,6 @@
       "type": "file"
     },
     {
-      "path": "lib/auth_canary/spiffe.ex",
-      "accessCount": 1,
-      "lastAccessed": 1777539904318,
-      "type": "file"
-    },
-    {
-      "path": "lib/auth_canary/zitadel.ex",
-      "accessCount": 1,
-      "lastAccessed": 1777539906146,
-      "type": "file"
-    },
-    {
-      "path": "config/test.exs",
-      "accessCount": 1,
-      "lastAccessed": 1777541121772,
-      "type": "file"
-    },
-    {
       "path": "test/auth_canary/error_test.exs",
       "accessCount": 1,
       "lastAccessed": 1777541130188,
@@ -250,6 +256,54 @@
       "path": "deps/observlib/mix.exs",
       "accessCount": 1,
       "lastAccessed": 1777541592305,
+      "type": "file"
+    },
+    {
+      "path": "deps/spiffe_ex/lib/spiffe_ex/workload_api/grpc_adapter.ex",
+      "accessCount": 1,
+      "lastAccessed": 1777550114924,
+      "type": "file"
+    },
+    {
+      "path": "deps/spiffe_ex/lib/spiffe_ex.ex",
+      "accessCount": 1,
+      "lastAccessed": 1777550115049,
+      "type": "file"
+    },
+    {
+      "path": "lib",
+      "accessCount": 1,
+      "lastAccessed": 1777550655383,
+      "type": "directory"
+    },
+    {
+      "path": ".formatter.exs",
+      "accessCount": 1,
+      "lastAccessed": 1777564318914,
+      "type": "file"
+    },
+    {
+      "path": "test/e2e/process-compose.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1777564454207,
+      "type": "file"
+    },
+    {
+      "path": "test/e2e/spire/server.conf",
+      "accessCount": 1,
+      "lastAccessed": 1777564468451,
+      "type": "file"
+    },
+    {
+      "path": "test/e2e/spire/agent.conf",
+      "accessCount": 1,
+      "lastAccessed": 1777564475909,
+      "type": "file"
+    },
+    {
+      "path": "test/e2e/zitadel/config.yaml",
+      "accessCount": 1,
+      "lastAccessed": 1777564489674,
       "type": "file"
     }
   ],

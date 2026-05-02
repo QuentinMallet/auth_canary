@@ -16,7 +16,9 @@ defmodule AuthCanary.Scheduler do
        interval_ms: interval_ms,
        consecutive_failures: 0,
        failure_threshold: failure_threshold,
-       degraded_emitted: false
+       degraded_emitted: false,
+       last_failed_step: nil,
+       last_failed_reason: nil
      }}
   end
 
@@ -60,7 +62,7 @@ defmodule AuthCanary.Scheduler do
       step: step
     })
 
-    state = %{state | consecutive_failures: new_failures}
+    state = %{state | consecutive_failures: new_failures, last_failed_step: step, last_failed_reason: reason}
     maybe_emit_degraded(state)
   end
 
@@ -70,6 +72,7 @@ defmodule AuthCanary.Scheduler do
        when n >= t do
     :telemetry.execute([:auth_canary, :degraded], %{count: n}, %{})
     Logger.critical("canary.degraded", count: n)
+    AuthCanary.Notifier.notify_degraded(state.last_failed_step, state.last_failed_reason, n)
     %{state | degraded_emitted: true}
   end
 

@@ -18,7 +18,8 @@ config :auth_canary,
 config :auth_canary,
   spiffe_socket: System.get_env("SPIFFE_ENDPOINT_SOCKET", "/run/spire/agent.sock"),
   check_interval_ms: String.to_integer(System.get_env("CHECK_INTERVAL_MS", "60000")),
-  failure_threshold: String.to_integer(System.get_env("FAILURE_THRESHOLD", "5"))
+  failure_threshold: String.to_integer(System.get_env("FAILURE_THRESHOLD", "5")),
+  webhook_url: System.get_env("WEBHOOK_URL")
 
 # Setup optional admin credentials
 config :auth_canary,

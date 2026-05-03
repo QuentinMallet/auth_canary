@@ -1,13 +1,12 @@
 defmodule AuthCanary.Pipeline do
-  alias AuthCanary.{Spiffe, Zitadel, Openbao, Error}
+  alias AuthCanary.{Spiffe, Openbao, Error}
 
   @spec run() :: {:ok, :success} | {:error, atom(), String.t()}
   def run do
     spiffe_socket = Application.fetch_env!(:auth_canary, :spiffe_socket)
 
     with {:ok, jwt_svid} <- wrap_step(:spiffe, fn -> Spiffe.fetch_jwt_svid(spiffe_socket) end),
-         {:ok, oidc_token} <- wrap_step(:zitadel, fn -> Zitadel.exchange_token(jwt_svid) end),
-         {:ok, _secret} <- wrap_step(:openbao, fn -> Openbao.read_secret(oidc_token) end) do
+         {:ok, _secret} <- wrap_step(:openbao, fn -> Openbao.read_secret(jwt_svid) end) do
       {:ok, :success}
     end
   end

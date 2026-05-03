@@ -7,7 +7,7 @@ defmodule AuthCanary.Openbao do
     bao_role = Application.fetch_env!(:auth_canary, :bao_role)
     bao_secret_path = Application.fetch_env!(:auth_canary, :bao_secret_path)
     bao_kv_mount = Application.get_env(:auth_canary, :bao_kv_mount, "secret")
-    bao_jwt_mount = Application.get_env(:auth_canary, :bao_jwt_mount, "auth/jwt")
+    bao_jwt_mount = Application.get_env(:auth_canary, :bao_jwt_mount, "auth/jwt-spire")
     ca_cert = Application.get_env(:auth_canary, :bao_ca_cert)
     tls_verify = Application.get_env(:auth_canary, :bao_tls_verify, true)
     transport = [transport_opts: tls_opts(ca_cert, tls_verify)]

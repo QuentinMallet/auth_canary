@@ -4,14 +4,17 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     flake-utils.url = "github:numtide/flake-utils";
+    app-infra-module.url = "path:/home/urist/Documents/boulot/app-infra-module";
+    # NOTE: Change to git+ssh: before non-local deploy
   };
 
   outputs =
     {
       nixpkgs,
       flake-utils,
+      app-infra-module,
       ...
-    }:
+    }@inputs:
     flake-utils.lib.eachDefaultSystem (
       system:
       let
@@ -306,6 +309,12 @@
         };
       }
     ) // {
+    nixosModules.default = {
+      imports = [
+        app-infra-module.nixosModules.default
+        ./nix/module.nix
+      ];
+    };
     lib.zitadelProject = "CoreApps";
   };
 }

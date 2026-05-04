@@ -38,7 +38,7 @@ defmodule AuthCanary.PipelineTest do
     test "returns {:error, :spiffe, sanitized_reason} when Spiffe step fails" do
       Application.put_env(:auth_canary, :spiffe_socket, "/tmp/no_socket_#{:rand.uniform(999_999)}.sock")
 
-      assert {:error, :spiffe, reason} = AuthCanary.Pipeline.run()
+      assert {:error, :spiffe, reason} = AuthCanary.PipelineSpire.run()
       assert is_binary(reason)
       assert byte_size(reason) <= 200
     end
@@ -61,7 +61,7 @@ defmodule AuthCanary.PipelineTest do
 
       # For this test we need Spiffe to succeed, which we can't do without a real socket.
       # Instead verify the Spiffe step returns error:spiffe correctly.
-      assert {:error, :spiffe, _reason} = AuthCanary.Pipeline.run()
+      assert {:error, :spiffe, _reason} = AuthCanary.PipelineSpire.run()
     end
 
     test "returns {:error, :openbao, sanitized_reason} when Openbao step fails (via stub)" do
@@ -107,14 +107,14 @@ defmodule AuthCanary.PipelineTest do
       Application.put_env(:req, :default_options, plug: {Req.Test, :pipeline_all_ok})
 
       # Pipeline will fail at Spiffe (no socket), but the stub tests HTTP steps
-      # Test the HTTP layer of Pipeline independently:
-      assert {:ok, _} = AuthCanary.Zitadel.exchange_token("test-svid")
+      # Test the HTTP layer of PipelineSpire independently via Openbao:
+      assert {:ok, _} = AuthCanary.Openbao.read_secret("test-token")
     end
 
     test "sanitized_reason never contains a JWT Bearer token string" do
       Application.put_env(:auth_canary, :spiffe_socket, "/tmp/no_socket_#{:rand.uniform(999_999)}.sock")
 
-      assert {:error, :spiffe, reason} = AuthCanary.Pipeline.run()
+      assert {:error, :spiffe, reason} = AuthCanary.PipelineSpire.run()
       assert is_binary(reason)
       refute String.contains?(reason, "eyJ") and String.contains?(reason, "Bearer")
       assert byte_size(reason) <= 200

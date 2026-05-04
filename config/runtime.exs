@@ -26,6 +26,15 @@ config :auth_canary,
   bao_kv_mount: System.get_env("BAO_KV_MOUNT", "secret"),
   bao_jwt_mount: System.get_env("BAO_JWT_MOUNT", "auth/jwt-spire")
 
+# Zitadel OIDC machine account (optional — if absent, Zitadel pipeline is skipped)
+config :auth_canary,
+  zitadel_addr: System.get_env("ZITADEL_ADDR"),
+  zitadel_client_id: System.get_env("ZITADEL_CLIENT_ID"),
+  zitadel_client_secret: System.get_env("ZITADEL_CLIENT_SECRET"),
+  bao_zitadel_jwt_mount: System.get_env("BAO_ZITADEL_JWT_MOUNT", "auth/jwt"),
+  bao_zitadel_role: System.get_env("BAO_ZITADEL_ROLE"),
+  bao_zitadel_secret_path: System.get_env("BAO_ZITADEL_SECRET_PATH")
+
 # Observlib — config under :observlib app key (not :auth_canary, :observlib)
 # Keys confirmed from source: service_name, otlp_endpoint, resource_attributes, telemetry_events
 # Call ObservLib.configure() in application.ex after supervisor start (no setup/1 function)

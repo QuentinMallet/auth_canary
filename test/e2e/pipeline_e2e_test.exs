@@ -5,7 +5,7 @@ defmodule AuthCanary.PipelineE2ETest do
   @moduletag timeout: 30_000
 
   test "full pipeline: SPIFFE SVID → Zitadel token → OpenBao token → KV secret" do
-    assert {:ok, secret} = AuthCanary.Pipeline.run()
+    assert {:ok, secret} = AuthCanary.PipelineSpire.run()
     assert is_map(secret)
     assert Map.has_key?(secret, "value")
   end
@@ -14,6 +14,6 @@ defmodule AuthCanary.PipelineE2ETest do
     original = System.get_env("BAO_SECRET_PATH")
     System.put_env("BAO_SECRET_PATH", "nonexistent/path/that/does/not/exist")
     on_exit(fn -> System.put_env("BAO_SECRET_PATH", original || "") end)
-    assert {:error, _} = AuthCanary.Pipeline.run()
+    assert {:error, _} = AuthCanary.PipelineSpire.run()
   end
 end

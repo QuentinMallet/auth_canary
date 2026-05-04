@@ -1,7 +1,9 @@
-defmodule AuthCanary.Scheduler do
+defmodule AuthCanary.SchedulerZitadel do
+  @moduledoc "Periodic scheduler for the Zitadel OIDC pipeline check."
+
   use GenServer
   require Logger
-  alias AuthCanary.PipelineSpire
+  alias AuthCanary.PipelineZitadel
 
   def start_link(opts), do: GenServer.start_link(__MODULE__, opts, name: __MODULE__)
 
@@ -24,7 +26,7 @@ defmodule AuthCanary.Scheduler do
 
   @impl true
   def handle_info(:tick, state) do
-    {elapsed_us, result} = :timer.tc(fn -> PipelineSpire.run() end)
+    {elapsed_us, result} = :timer.tc(fn -> PipelineZitadel.run() end)
     state = handle_result(result, div(elapsed_us, 1000), state)
     schedule_tick(state.interval_ms)
     {:noreply, state}
@@ -36,33 +38,43 @@ defmodule AuthCanary.Scheduler do
 
   @impl true
   def terminate(_reason, _state) do
-    Logger.info("canary.shutdown", reason: "scheduler terminating")
+    Logger.info("canary.zitadel.shutdown", reason: "scheduler terminating")
   end
 
   defp schedule_tick(ms), do: Process.send_after(self(), :tick, ms)
 
   defp handle_result({:ok, :success}, elapsed_ms, state) do
-    Logger.info("canary.success", elapsed_ms: elapsed_ms)
-    :telemetry.execute([:auth_canary, :cycle], %{elapsed_ms: elapsed_ms}, %{result: :success})
+    Logger.info("canary.zitadel.success", elapsed_ms: elapsed_ms)
+
+    :telemetry.execute([:auth_canary, :zitadel_cycle], %{elapsed_ms: elapsed_ms}, %{
+      result: :success
+    })
+
     %{state | consecutive_failures: 0, degraded_emitted: false}
   end
 
   defp handle_result({:error, step, reason}, elapsed_ms, state) do
     new_failures = state.consecutive_failures + 1
 
-    Logger.warning("canary.failure",
+    Logger.warning("canary.zitadel.failure",
       step: step,
       reason: reason,
       elapsed_ms: elapsed_ms,
       consecutive: new_failures
     )
 
-    :telemetry.execute([:auth_canary, :cycle], %{elapsed_ms: elapsed_ms}, %{
+    :telemetry.execute([:auth_canary, :zitadel_cycle], %{elapsed_ms: elapsed_ms}, %{
       result: :failure,
       step: step
     })
 
-    state = %{state | consecutive_failures: new_failures, last_failed_step: step, last_failed_reason: reason}
+    state = %{
+      state
+      | consecutive_failures: new_failures,
+        last_failed_step: step,
+        last_failed_reason: reason
+    }
+
     maybe_emit_degraded(state)
   end
 
@@ -70,8 +82,8 @@ defmodule AuthCanary.Scheduler do
          %{consecutive_failures: n, failure_threshold: t, degraded_emitted: false} = state
        )
        when n >= t do
-    :telemetry.execute([:auth_canary, :degraded], %{count: n}, %{})
-    Logger.critical("canary.degraded", count: n)
+    :telemetry.execute([:auth_canary, :zitadel_degraded], %{count: n}, %{})
+    Logger.critical("canary.zitadel.degraded", count: n)
     AuthCanary.Notifier.notify_degraded(state.last_failed_step, state.last_failed_reason, n)
     %{state | degraded_emitted: true}
   end
@@ -80,7 +92,7 @@ defmodule AuthCanary.Scheduler do
 
   defp handle_unexpected(error, state) do
     new_failures = state.consecutive_failures + 1
-    Logger.error("canary.unexpected", error: inspect(error), consecutive: new_failures)
+    Logger.error("canary.zitadel.unexpected", error: inspect(error), consecutive: new_failures)
     state = %{state | consecutive_failures: new_failures}
     state = maybe_emit_degraded(state)
     schedule_tick(state.interval_ms)

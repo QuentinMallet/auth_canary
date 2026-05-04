@@ -14,12 +14,24 @@ defmodule AuthCanary.Application do
 
     spiffe_socket = Application.fetch_env!(:auth_canary, :spiffe_socket)
 
-    children = [
-      {SpiffeEx, socket_path: spiffe_socket},
-      %{id: AuthCanary.Setup, start: {AuthCanary.Setup, :start_link, [[]]}, restart: :temporary},
-      AuthCanary.Telemetry,
-      AuthCanary.Scheduler
-    ]
+    zitadel_configured? =
+      Application.get_env(:auth_canary, :zitadel_addr) != nil and
+        Application.get_env(:auth_canary, :zitadel_client_id) != nil and
+        Application.get_env(:auth_canary, :zitadel_client_secret) != nil
+
+    children =
+      [
+        {SpiffeEx, socket_path: spiffe_socket},
+        %{id: AuthCanary.Setup, start: {AuthCanary.Setup, :start_link, [[]]}, restart: :temporary},
+        AuthCanary.Telemetry,
+        AuthCanary.Scheduler
+      ] ++
+        if zitadel_configured? do
+          [AuthCanary.SchedulerZitadel]
+        else
+          Logger.info("canary.zitadel.skipped", reason: "ZITADEL_ADDR/CLIENT_ID/CLIENT_SECRET not set")
+          []
+        end
 
     Supervisor.start_link(children, strategy: :one_for_one, name: AuthCanary.Supervisor)
   end

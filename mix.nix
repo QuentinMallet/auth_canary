@@ -31,7 +31,7 @@ let
         sha256 = "c1022f8c549632137cbc8956f07bb4981405297f5abe7a752b4dffac175c3381";
       };
 
-      beamDeps = [ crux decimal ecto ets jason reactor spark splode stream_data telemetry ];
+      beamDeps = [ crux decimal ecto ets jason plug reactor spark splode stream_data telemetry ];
     };
 
     chatterbox = buildRebar3 rec {
@@ -463,6 +463,32 @@ let
       beamDeps = [ opentelemetry_api telemetry ];
     };
 
+    plug = buildMix rec {
+      name = "plug";
+      version = "1.19.1";
+
+      src = fetchHex {
+        pkg = "plug";
+        version = "${version}";
+        sha256 = "560a0017a8f6d5d30146916862aaf9300b7280063651dd7e532b8be168511e62";
+      };
+
+      beamDeps = [ mime plug_crypto telemetry ];
+    };
+
+    plug_crypto = buildMix rec {
+      name = "plug_crypto";
+      version = "2.1.1";
+
+      src = fetchHex {
+        pkg = "plug_crypto";
+        version = "${version}";
+        sha256 = "6470bce6ffe41c8bd497612ffde1a7e4af67f36a15eea5f921af71cf3e11247c";
+      };
+
+      beamDeps = [];
+    };
+
     protobuf = buildMix rec {
       name = "protobuf";
       version = "0.16.0";
@@ -512,7 +538,7 @@ let
         sha256 = "0b8bc6ffdfebbc07968e59d3ff96d52f2202d0536f10fef4dc11dc02a2a43e39";
       };
 
-      beamDeps = [ finch jason mime ];
+      beamDeps = [ finch jason mime plug ];
     };
 
     snabbkaffe = buildRebar3 rec {

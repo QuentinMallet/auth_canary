@@ -1,9 +1,6 @@
 defmodule AuthCanary.Openbao do
   require Logger
 
-  @doc "Authenticate via OpenBao JWT auth mount (SPIRE leg) and read KV v2 secret. Backward-compatible alias."
-  def read_secret(jwt_svid), do: read_secret_via_spire(jwt_svid)
-
   @doc "SPIRE leg: authenticate via auth/jwt-spire and read KV v2 secret"
   def read_secret_via_spire(jwt_svid) do
     bao_addr = Application.fetch_env!(:auth_canary, :bao_addr)

@@ -2,6 +2,9 @@
 set -euo pipefail
 source "${APP_INFRA_HELPERS}"
 
+# KV mount for auth-canary-zitadel secrets
+bao_ensure_kv_mount "kv"
+
 # Policy: auth-canary-zitadel-read — read-only on zitadel-canary path
 bao_ensure_policy "auth-canary-zitadel-read" '
   path "kv/data/auth-canary/zitadel-canary" {
@@ -18,7 +21,6 @@ bao_ensure_zitadel_jwt_role \
   "auth-canary-zitadel-read"
 
 # Seed the canary secret
-bao_ensure_kv_mount "kv"
 bao_seed_secret "kv/auth-canary/zitadel-canary" "value" "zitadel-canary-ok"
 
 echo "OpenBao setup for auth-canary-zitadel complete."

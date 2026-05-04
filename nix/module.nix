@@ -23,6 +23,28 @@ with lib;
 let
   cfg = config.services.auth-canary;
   cfgZit = config.services.auth-canary-zitadel;
+
+  # Shared systemd hardening — MemoryDenyWriteExecute intentionally omitted:
+  # the BEAM JIT requires W+X memory pages.
+  beamHardening = {
+    NoNewPrivileges = true;
+    ProtectSystem = "strict";
+    ProtectHome = true;
+    PrivateTmp = true;
+    PrivateDevices = true;
+    ProtectKernelTunables = true;
+    ProtectKernelModules = true;
+    ProtectControlGroups = true;
+    RestrictAddressFamilies = [
+      "AF_INET"
+      "AF_INET6"
+      "AF_UNIX"
+    ];
+    RestrictNamespaces = true;
+    LockPersonality = true;
+    RestrictRealtime = true;
+    SystemCallFilter = "@system-service";
+  };
 in
 {
   options.services.auth-canary = {
@@ -231,26 +253,7 @@ in
           RuntimeDirectory = "auth-canary";
 
           EnvironmentFile = mkIf (cfg.credentialsFile != null) cfg.credentialsFile;
-
-          # Hardening — MemoryDenyWriteExecute omitted: BEAM JIT requires W+X pages.
-          NoNewPrivileges = true;
-          ProtectSystem = "strict";
-          ProtectHome = true;
-          PrivateTmp = true;
-          PrivateDevices = true;
-          ProtectKernelTunables = true;
-          ProtectKernelModules = true;
-          ProtectControlGroups = true;
-          RestrictAddressFamilies = [
-            "AF_INET"
-            "AF_INET6"
-            "AF_UNIX"
-          ];
-          RestrictNamespaces = true;
-          LockPersonality = true;
-          RestrictRealtime = true;
-          SystemCallFilter = "@system-service";
-        };
+        } // beamHardening;
       };
     })
 
@@ -306,26 +309,7 @@ in
 
           # Secrets: ZITADEL_CLIENT_ID + ZITADEL_CLIENT_SECRET
           EnvironmentFile = mkIf (cfgZit.zitadelSecretsFile != null) cfgZit.zitadelSecretsFile;
-
-          # Same hardening as SPIRE leg
-          NoNewPrivileges = true;
-          ProtectSystem = "strict";
-          ProtectHome = true;
-          PrivateTmp = true;
-          PrivateDevices = true;
-          ProtectKernelTunables = true;
-          ProtectKernelModules = true;
-          ProtectControlGroups = true;
-          RestrictAddressFamilies = [
-            "AF_INET"
-            "AF_INET6"
-            "AF_UNIX"
-          ];
-          RestrictNamespaces = true;
-          LockPersonality = true;
-          RestrictRealtime = true;
-          SystemCallFilter = "@system-service";
-        };
+        } // beamHardening;
       };
     })
   ];

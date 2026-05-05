@@ -234,6 +234,10 @@ in
           # the start script never tries to cat that absent file.
           # auth_canary is single-node; the cookie value is not security-sensitive.
           RELEASE_COOKIE = "auth_canary_service";
+          # Disable distributed Erlang: auth_canary is standalone (no cluster).
+          # Without this, the BEAM tries to register with epmd which fails under
+          # systemd RestrictAddressFamilies + ProtectSystem=strict hardening.
+          RELEASE_DISTRIBUTION = "none";
           SPIFFE_ENDPOINT_SOCKET = cfg.spiffeSocket;
           BAO_ADDR = cfg.baoAddr;
           BAO_ROLE = cfg.baoRole;
@@ -288,6 +292,7 @@ in
           BAO_ADDR = cfg.baoAddr;
           BAO_TLS_VERIFY = boolToString cfg.baoTlsVerify;
           RELEASE_COOKIE = "auth_canary_service";
+          RELEASE_DISTRIBUTION = "none";
           BAO_KV_MOUNT = cfg.baoKvMount;
           # SPIRE leg config — set but not used by Zitadel scheduler
           BAO_ROLE = cfg.baoRole;

@@ -229,6 +229,11 @@ in
         wants = [ "network-online.target" ];
 
         environment = {
+          # Required: Elixir mix release start script reads releases/COOKIE which
+          # does not exist in Nix store builds.  Set RELEASE_COOKIE explicitly so
+          # the start script never tries to cat that absent file.
+          # auth_canary is single-node; the cookie value is not security-sensitive.
+          RELEASE_COOKIE = "auth_canary_service";
           SPIFFE_ENDPOINT_SOCKET = cfg.spiffeSocket;
           BAO_ADDR = cfg.baoAddr;
           BAO_ROLE = cfg.baoRole;
@@ -282,6 +287,7 @@ in
           # Shared config — reuse SPIRE leg bao settings for addr/tls
           BAO_ADDR = cfg.baoAddr;
           BAO_TLS_VERIFY = boolToString cfg.baoTlsVerify;
+          RELEASE_COOKIE = "auth_canary_service";
           BAO_KV_MOUNT = cfg.baoKvMount;
           # SPIRE leg config — set but not used by Zitadel scheduler
           BAO_ROLE = cfg.baoRole;
